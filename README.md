@@ -2,6 +2,10 @@
 
 Ferroboo is a game designed for my **metallurgy project**, where players guide an ingot named **Ferroboo** through various heat treatment processes to enhance its properties and battle powerful metal bosses. The game simulates real-world metallurgy concepts such as quenching, tempering, and annealing to influence Ferroboo’s strength, toughness, and ductility.
 
+##  📜 Story
+
+![Battle UI 1](/assets/game.png)
+
 ## 🔥 Gameplay Overview
 
 - Ferroboo starts with balanced properties: **hardness, toughness, ductility, and health**.
@@ -34,13 +38,9 @@ python ferroboo.py
 
 ## 🖼️ Battle UI Screenshots
 
-### 🔹 Ferroboo vs. Steel Knight
-
-![Battle UI 1](../assets/game.png)
-
 ### 🔹 Ferroboo vs. Adamantine Annihilator
 
-![Battle UI 2](../assets/fight.png)
+![Battle UI 2](/assets/fight.png)
 
 ## 🛠️ Future Improvements
 

@@ -15,14 +15,14 @@ class Ingot:
     def quench(self):
         if self.quench_count >= 3:
             self.health -= 20
-            self.hardness -= 10
+            self.hardness += 10
             self.toughness -= 15
             messagebox.showwarning("Critical Warning", 
                 f"{self.name} is critically brittle! The metal is starting to fail and lose its properties!")
         else:
             self.hardness += 20
             self.toughness -= 10
-            self.ductility -= 5
+            self.ductility -= 15
             messagebox.showinfo("Quenching", f"{self.name} has been quenched!")
             if self.hardness >= 120:
                 messagebox.showwarning("Warning", 
@@ -30,18 +30,21 @@ class Ingot:
         
         self.quench_count += 1
 
+        if self.ductility <=25:
+            messagebox.showwarning("Warning", 
+                f"{self.name} is losing ductility! Health reduced by 10.")
+            self.health -= 10
+
     def temper(self):
         self.hardness += 5
-        self.toughness += 15
+        self.toughness += 10
         self.ductility += 10
-        self.quench_count = 0
         messagebox.showinfo("Tempering", f"{self.name} has been tempered!")
 
     def anneal(self):
         self.hardness -= 10
-        self.toughness += 20
+        self.toughness += 15
         self.ductility += 20
-        self.quench_count = 0
         messagebox.showinfo("Annealing", f"{self.name} has been annealed!")
 
     def restore_health(self):
@@ -63,37 +66,26 @@ class Boss:
 class FerrobooApp:
     def __init__(self, root):
         self.root = root 
-        bg_image = Image.open("stage.png")  # Replace with your background image path
-        bg_image = bg_image.resize((root.winfo_width(), root.winfo_height()), Image.LANCZOS)  # Adjust size to fit window
+        bg_image = Image.open("../assets/stage.png")  
+        bg_image = bg_image.resize((root.winfo_width(), root.winfo_height()), Image.LANCZOS)  
         self.bg_image = ImageTk.PhotoImage(bg_image)
 
         # Set up the background label
         self.bg_label = tk.Label(self.root, image=self.bg_image)
         self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-
         self.root.bind('<Configure>', self.resize_background)
-
-    def resize_background(self, event):
-        bg_image = Image.open("stage.png")
-        bg_image = bg_image.resize((event.width, event.height), Image.LANCZOS)
-        self.bg_image = ImageTk.PhotoImage(bg_image)
-        self.bg_label.config(image=self.bg_image)
-
-        # Set up bottom image frame
-        self.image_frame = tk.Frame(root, bg="#1E1E1E")
-        self.image_frame.pack(side=tk.BOTTOM, pady=20)
 
         self.ferroboo = Ingot()
         self.bosses = [
-            Boss("Iron Crusher", hardness=60, toughness=40, health=120, image_path="iron_crusher.jpg"),
-            Boss("Steel Knight", hardness=70, toughness=50, health=140, image_path="steel_samurai.jpg"),
-            Boss("Titanium Terror", hardness=80, toughness=60, health=160, image_path="titanium_terror.jpg"),
-            Boss("Diamond Destroyer", hardness=90, toughness=70, health=180, image_path="diamond_destroyer.jpg"),
-            Boss("Adamantine Annihilator", hardness=100, toughness=80, health=200, image_path="adementium_wala.jpg"),
+            Boss("Iron Crusher", hardness=60, toughness=40, health=120, image_path="../assets/iron_crusher.jpg"),
+            Boss("Steel Knight", hardness=70, toughness=50, health=140, image_path="../assets/steel_samurai.jpg"),
+            Boss("Titanium Terror", hardness=80, toughness=60, health=160, image_path="../assets/titanium_terror.jpg"),
+            Boss("Diamond Destroyer", hardness=90, toughness=70, health=180, image_path="../assets/diamond_destroyer.jpg"),
+            Boss("Adamantine Annihilator", hardness=100, toughness=80, health=200, image_path="../assets/adementium_wala.jpg"),
         ]
         self.current_boss_index = 0
         self.current_boss = self.bosses[self.current_boss_index]
-        
+
         self.previous_stats = {
             "hardness": self.ferroboo.hardness,
             "toughness": self.ferroboo.toughness,
@@ -102,15 +94,17 @@ class FerrobooApp:
             "boss_health": self.current_boss.health
         }
 
-        # Set up bottom image frame
-        self.image_frame = tk.Frame(root, bg="#1E1E1E")
-        self.image_frame.pack(side=tk.BOTTOM, pady=20)
+        self.ferroboo_frame = tk.Frame(root, bg="#1E1E1E")
+        self.ferroboo_frame.place(relx=0.32, rely=0.53, relwidth=0.09, relheight=0.17)
+
+        self.boss_frame = tk.Frame(root, bg="#1E1E1E")
+        self.boss_frame.place(relx=0.63, rely=0.53, relwidth=0.09, relheight=0.17)
 
         # Load and display Feroboo's image
-        ferroboo_img = Image.open("feroboo_1.jpeg").resize((160, 160), Image.LANCZOS)
+        ferroboo_img = Image.open("../assets/feroboo_1.jpg").resize((160, 160), Image.LANCZOS)
         self.ferroboo_image = ImageTk.PhotoImage(ferroboo_img)
-        self.ferroboo_label = tk.Label(self.image_frame, image=self.ferroboo_image, bg="#1E1E1E")
-        self.ferroboo_label.grid(row=0, column=0, padx=(0, 40), sticky="w")
+        self.ferroboo_label = tk.Label(self.ferroboo_frame, image=self.ferroboo_image, bg="#1E1E1E")
+        self.ferroboo_label.pack()
 
         # Load and display the current boss's image
         self.update_boss_image()
@@ -125,6 +119,12 @@ class FerrobooApp:
 
         self.create_buttons()
         self.update_stats()
+
+    def resize_background(self, event):
+        bg_image = Image.open("../assets/stage.png")
+        bg_image = bg_image.resize((event.width, event.height), Image.LANCZOS)
+        self.bg_image = ImageTk.PhotoImage(bg_image)
+        self.bg_label.config(image=self.bg_image)
 
     def create_buttons(self):
         self.treatment_frame = tk.Frame(self.root, bg="#1E1E1E")
@@ -180,14 +180,15 @@ class FerrobooApp:
             "boss_health": self.current_boss.health
         }
 
+
     def update_boss_image(self):
         boss_img = Image.open(self.current_boss.image_path).resize((160, 160), Image.LANCZOS)
         self.current_boss.image = ImageTk.PhotoImage(boss_img)
         if hasattr(self, 'boss_image_label'):
             self.boss_image_label.config(image=self.current_boss.image)
         else:
-            self.boss_image_label = tk.Label(self.image_frame, image=self.current_boss.image, bg="#1E1E1E")
-            self.boss_image_label.grid(row=0, column=1, padx=(40, 0), sticky="e")
+            self.boss_image_label = tk.Label(self.boss_frame, image=self.current_boss.image, bg="#1E1E1E")
+            self.boss_image_label.grid(row=0, column=1, padx=(0, 0), sticky="e")
 
     def quench(self):
         self.ferroboo.quench()
@@ -234,12 +235,11 @@ class FerrobooApp:
                     messagebox.showinfo("Next Battle", f"Prepare to face {self.current_boss.name}!")
                     self.update_stats()
                 else:
-                    messagebox.showinfo("Congratulations!", "You defeated all the bosses!", "You Are A Cheetah")
+                    messagebox.showinfo("Congratulations!", "You defeated all the bosses!" "You Are A Cheetah")
             else:
                 self.ferroboo.restore_health()
                 self.current_boss.restore_health()
                 self.update_stats()
-
 
 if __name__ == "__main__":
     root = tk.Tk()
